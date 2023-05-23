@@ -8,6 +8,14 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "prettier": {
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true,
+    "jsxSingleQuote": true,
+    "printWidth": 100
+  },
   "dependencies": {
     "@types/node": "20.2.3",
     "@types/react": "18.2.6",
