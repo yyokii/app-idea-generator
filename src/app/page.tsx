@@ -65,7 +65,6 @@ export default function Home() {
       })
       const generatedIdeas = completion.data.choices[0].text ?? ''
 
-      console.log(generatedIdeas)
       if (generatedIdeas) {
         const data = JSON.parse(generatedIdeas)
         const ideas: [Idea] = data.product.map((item: any) => ({
@@ -74,17 +73,11 @@ export default function Home() {
         }))
         setGeneratedIdeas(ideas)
       } else {
-        setGeneratingError('Error occurred while parsing and formating. Please try again later.')
+        setGeneratingError('Error occurred while parsing and formatting.. Please try again later.')
       }
     } catch (error: any) {
       console.log(error)
-      if (error.response) {
-        console.log(error.response.status)
-        console.log(error.response.data)
-        setGeneratingError('error')
-      } else {
-        setGeneratingError('Error occurred while generating ideas. Please try again later.')
-      }
+      setGeneratingError('Error occurred while generating ideas. Please try again later.')
     }
 
     setIsGenerating(false)
@@ -116,7 +109,6 @@ export default function Home() {
             isLoading={isGenerating}
             onClick={async () => {
               await generateIdeas()
-              // demo()
             }}
           >
             Generate
