@@ -13,7 +13,7 @@ export default function Header() {
       borderColor={'gray.300'}
     >
       <Text fontSize='lg' fontWeight='bold'>
-        Product Idea Generator
+        App Idea Generator by AI
       </Text>
     </Flex>
   )
