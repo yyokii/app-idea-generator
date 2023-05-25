@@ -69,7 +69,7 @@ export default function Footer() {
           <SocialButton
             label={'Github'}
             onclick={() => {
-              window.open('https://github.com/yyokii', '_blank')
+              window.open('https://github.com/yyokii/app-idea-generator', '_blank')
             }}
           >
             <FaGithub />

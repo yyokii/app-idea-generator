@@ -28,6 +28,11 @@ const features = [
     title: 'Simple',
     text: 'Just press one button.',
   },
+  {
+    id: 4,
+    title: 'Ideas',
+    text: 'The title and details of the app is output.',
+  },
 ]
 
 export default function FeaturesList() {
