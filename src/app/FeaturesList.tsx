@@ -20,13 +20,13 @@ const features = [
   },
   {
     id: 2,
-    title: 'Save',
-    text: 'Save articles you read easily.',
+    title: 'AI',
+    text: "This service uses OpenAI's API.",
   },
   {
     id: 3,
-    title: 'Share',
-    text: 'You can share the URL to let everyone know what you are interested in.',
+    title: 'Simple',
+    text: 'Just press one button.',
   },
 ]
 

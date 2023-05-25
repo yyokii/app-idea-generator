@@ -62,7 +62,7 @@ export default function Footer() {
       >
         <HStack>
           {/* <Image src='/images/icon.png' width={32} height={32} alt='My avatar' /> */}
-          <Text fontWeight={'semibold'}>idea</Text>
+          <Text fontWeight={'semibold'}>App Idea Generator by AI</Text>
         </HStack>
 
         <Stack direction={'row'} spacing={6}>

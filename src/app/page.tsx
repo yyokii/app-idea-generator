@@ -57,7 +57,7 @@ export default function Home() {
       <Hero />
       <FeaturesList />
       <VStack spacing={4} pb={8}>
-        <Heading fontSize={'3xl'}>Start</Heading>
+        <Heading fontSize={'3xl'}>Try</Heading>
         <VStack spacing={4} pb={8}>
           <Heading fontSize={'xl'}>What is the category of product you want to create?</Heading>
           <Select
