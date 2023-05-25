@@ -11,7 +11,7 @@ import { IdeaCard } from './IdeaCard'
 
 export default function Home() {
   const [generatingError, setGeneratingError] = useState<string>('')
-  const [generatedIdeas, setGeneratedIdeas] = useState<[Idea]>()
+  const [generatedIdeas, setGeneratedIdeas] = useState<Idea[]>([])
   const [isGenerating, setIsGenerating] = useState<boolean>(false)
 
   const [appCategory, setAppCateogry] = useState('')
@@ -22,62 +22,31 @@ export default function Home() {
   delete configuration.baseOptions.headers['User-Agent']
   const openAIAPI = new OpenAIApi(configuration)
 
-  async function generateIdeas() {
+  async function generateIdea(appCategory: string) {
     setGeneratingError('')
     setIsGenerating(true)
 
     try {
-      const completion = await openAIAPI.createCompletion({
-        model: 'text-davinci-003',
-        prompt: `
-        What I want you to consider is an idea for an application, such as a mobile app or web app.
-        As much as possible, please make the application idea something that has never been seen before.
-        Please output 3 product ideas. Each output should only include the product name and a brief description(about 150 words).
-
-        Below are the answers to the questions.
-        You set the target users and what problem you want to solve at random, and create an idea based on that and the answers below.
-
-        Q. What is the category of product you want to create?
-        A. ${appCategory}
-
-        The output should be in JSON format, and only output the content of JSON.
-        Start with the output of JSON, and end the answer when the output of JSON is finished. Please use the following key names for JSON.
-        Array key: product
-        Product name key: name
-        Product details key: description
-
-        Below is an example output.
-
-        {
-          "product": [
-            {
-              "name": "sample name",
-              "description": "sample description"
-            },
-            {
-              "name": "sample name",
-              "description": "sample description"
-            }
-          ]
-        }
-        `,
-        max_tokens: 500,
+      const response = await fetch('/api/appIdea', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ appCategory }),
       })
-      const generatedIdeas = completion.data.choices[0].text ?? ''
 
-      if (generatedIdeas) {
-        const data = JSON.parse(generatedIdeas)
-        const ideas: [Idea] = data.product.map((item: any) => ({
-          name: item.name,
-          description: item.description,
-        }))
+      if (response.ok) {
+        const ideas: Idea[] = await response.json()
+        console.log(ideas)
         setGeneratedIdeas(ideas)
       } else {
-        setGeneratingError('Error occurred while parsing and formatting.. Please try again later.')
+        const data = await response.json()
+        console.log(data)
+        setGeneratingError(data.error)
       }
     } catch (error: any) {
       console.log(error)
-      setGeneratingError('Error occurred while generating ideas. Please try again later.')
+      setGeneratingError(error)
     }
 
     setIsGenerating(false)
@@ -108,7 +77,7 @@ export default function Home() {
             size='lg'
             isLoading={isGenerating}
             onClick={async () => {
-              await generateIdeas()
+              await generateIdea(appCategory)
             }}
           >
             Generate
@@ -116,7 +85,7 @@ export default function Home() {
           {generatingError && <Text fontSize={'md'}>{generatingError}</Text>}
 
           <VStack spacing={4} align={'center'}>
-            {generatedIdeas?.map((idea) => (
+            {generatedIdeas.map((idea) => (
               <IdeaCard key={idea.name} name={idea.name} description={idea.description} />
             ))}
           </VStack>

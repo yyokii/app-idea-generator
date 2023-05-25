@@ -1,3 +1,8 @@
+## Features
+
+- Generate idea
+- Rate limit by IP address
+
 ## Develop memo
 
 - [OpenAI API](https://platform.openai.com/docs/introduction)
