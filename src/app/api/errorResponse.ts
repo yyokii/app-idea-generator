@@ -21,6 +21,13 @@ export function makeNotFoundErrorResponse(errorDetail: string): NextResponse {
   })
 }
 
+export function makeTooManyRequestsErrorResponse(errorDetail: string): NextResponse {
+  return new NextResponse(JSON.stringify({ error: `${errorDetail}` }), {
+    status: 429,
+    statusText: 'Too Many Requests.',
+  })
+}
+
 export function makeInternalServerErrorResponse(errorDetail: string): NextResponse {
   return new NextResponse(JSON.stringify({ error: `${errorDetail}` }), {
     status: 500,

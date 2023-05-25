@@ -1,9 +1,27 @@
 import { Idea } from '@/model/idea'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { Configuration, OpenAIApi } from 'openai'
-import { makeBadRequestErrorResponse } from '../errorResponse'
+import { makeBadRequestErrorResponse, makeTooManyRequestsErrorResponse } from '../errorResponse'
+import { rateLimit } from '@/util/rateLimit'
 
-export async function POST(request: Request) {
+const limiter = rateLimit()
+
+export async function POST(request: NextRequest): Promise<Response> {
+  // リクエスト元のIPアドレスによりrate limitを設定
+  let ip = request.ip ?? request.headers.get('x-real-ip') ?? ''
+  const forwardedFor = request.headers.get('x-forwarded-for')
+  if (!ip && forwardedFor) {
+    // 中間サーバーを経由している場合は、x-forwarded-forヘッダーから先頭のIPアドレスを取得
+    ip = forwardedFor.split(',').at(0) ?? 'Unknown'
+  }
+  try {
+    await limiter.check(5, ip) // 同一IPアドレスからのアクセスはインターバルで最大5回まで
+  } catch (error: any) {
+    console.log(error)
+    return makeTooManyRequestsErrorResponse(error)
+  }
+
+  // OpenAI APIの設定
   const configuration = new Configuration({
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
   })
@@ -12,6 +30,7 @@ export async function POST(request: Request) {
 
   const body = await request.json()
 
+  // OpenAI APIを使ってアイデアを生成
   try {
     const completion = await openAIAPI.createCompletion({
       model: 'text-davinci-003',
