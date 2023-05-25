@@ -1,93 +1,135 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client'
+
+import { useState } from 'react'
+import { Button, Text, Heading, VStack, Select } from '../components'
+import FeaturesList from './FeaturesList'
+import Hero from './Hero'
+import { Configuration, OpenAIApi } from 'openai'
+import { appCategories } from '@/model/appCategory'
+import { Idea } from '@/model/idea'
+import { IdeaCard } from './IdeaCard'
 
 export default function Home() {
+  const [generatingError, setGeneratingError] = useState<string>('')
+  const [generatedIdeas, setGeneratedIdeas] = useState<[Idea]>()
+  const [isGenerating, setIsGenerating] = useState<boolean>(false)
+
+  const [appCategory, setAppCateogry] = useState('')
+
+  const configuration = new Configuration({
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  })
+  delete configuration.baseOptions.headers['User-Agent']
+  const openAIAPI = new OpenAIApi(configuration)
+
+  async function generateIdeas() {
+    setGeneratingError('')
+    setIsGenerating(true)
+
+    try {
+      const completion = await openAIAPI.createCompletion({
+        model: 'text-davinci-003',
+        prompt: `
+        What I want you to consider is an idea for an application, such as a mobile app or web app.
+        As much as possible, please make the application idea something that has never been seen before.
+        Please output 3 product ideas. Each output should only include the product name and a brief description(about 150 words).
+
+        Below are the answers to the questions.
+        You set the target users and what problem you want to solve at random, and create an idea based on that and the answers below.
+
+        Q. What is the category of product you want to create?
+        A. ${appCategory}
+
+        The output should be in JSON format, and only output the content of JSON.
+        Start with the output of JSON, and end the answer when the output of JSON is finished. Please use the following key names for JSON.
+        Array key: product
+        Product name key: name
+        Product details key: description
+
+        Below is an example output.
+
+        {
+          "product": [
+            {
+              "name": "sample name",
+              "description": "sample description"
+            },
+            {
+              "name": "sample name",
+              "description": "sample description"
+            }
+          ]
+        }
+        `,
+        max_tokens: 500,
+      })
+      const generatedIdeas = completion.data.choices[0].text ?? ''
+
+      console.log(generatedIdeas)
+      if (generatedIdeas) {
+        const data = JSON.parse(generatedIdeas)
+        const ideas: [Idea] = data.product.map((item: any) => ({
+          name: item.name,
+          description: item.description,
+        }))
+        setGeneratedIdeas(ideas)
+      } else {
+        setGeneratingError('Error occurred while parsing and formating. Please try again later.')
+      }
+    } catch (error: any) {
+      console.log(error)
+      if (error.response) {
+        console.log(error.response.status)
+        console.log(error.response.data)
+        setGeneratingError('error')
+      } else {
+        setGeneratingError('Error occurred while generating ideas. Please try again later.')
+      }
+    }
+
+    setIsGenerating(false)
+  }
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href='https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app'
-            target='_blank'
-            rel='noopener noreferrer'
+    <VStack spacing={4} align='center'>
+      <Hero />
+      <FeaturesList />
+      <VStack spacing={4} pb={8}>
+        <Heading fontSize={'3xl'}>Start</Heading>
+        <VStack spacing={4} pb={8}>
+          <Heading fontSize={'xl'}>What is the category of product you want to create?</Heading>
+          <Select
+            placeholder='select category'
+            value={appCategory}
+            onChange={(e) => setAppCateogry(e.target.value)}
           >
-            By{' '}
-            <Image
-              src='/vercel.svg'
-              alt='Vercel Logo'
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+            {appCategories.map((category) => (
+              <option key={category.value} value={category.value}>
+                {category.label}
+              </option>
+            ))}
+          </Select>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src='/next.svg'
-          alt='Next.js Logo'
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+          <Button
+            colorScheme='orange'
+            size='lg'
+            isLoading={isGenerating}
+            onClick={async () => {
+              await generateIdeas()
+              // demo()
+            }}
+          >
+            Generate
+          </Button>
+          {generatingError && <Text fontSize={'md'}>{generatingError}</Text>}
 
-      <div className={styles.grid}>
-        <a
-          href='https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app'
-          className={styles.card}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href='https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app'
-          className={styles.card}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href='https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app'
-          className={styles.card}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href='https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app'
-          className={styles.card}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>Instantly deploy your Next.js site to a shareable URL with Vercel.</p>
-        </a>
-      </div>
-    </main>
+          <VStack spacing={4} align={'center'}>
+            {generatedIdeas?.map((idea) => (
+              <IdeaCard key={idea.name} name={idea.name} description={idea.description} />
+            ))}
+          </VStack>
+        </VStack>
+      </VStack>
+    </VStack>
   )
 }
