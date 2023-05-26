@@ -11,7 +11,7 @@ import { IdeaCard } from './IdeaCard'
 
 export default function Home() {
   const [generatingError, setGeneratingError] = useState<string>('')
-  const [generatedIdeas, setGeneratedIdeas] = useState<Idea[]>([])
+  const [generatedIdeas, setGeneratedIdeas] = useState<string>('')
   const [isGenerating, setIsGenerating] = useState<boolean>(false)
 
   const [appCategory, setAppCateogry] = useState('')
@@ -23,30 +23,41 @@ export default function Home() {
   const openAIAPI = new OpenAIApi(configuration)
 
   async function generateIdea(appCategory: string) {
+    setGeneratedIdeas('')
     setGeneratingError('')
     setIsGenerating(true)
 
-    try {
-      const response = await fetch('/api/appIdea', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ appCategory }),
-      })
+    const response = await fetch('/api/appIdea', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        appCategory,
+      }),
+    })
 
-      if (response.ok) {
-        const ideas: Idea[] = await response.json()
-        console.log(ideas)
-        setGeneratedIdeas(ideas)
-      } else {
-        const data = await response.json()
-        console.log(data)
-        setGeneratingError(data.error)
-      }
-    } catch (error: any) {
-      console.log(error)
-      setGeneratingError(error)
+    if (!response.ok) {
+      setIsGenerating(false)
+      setGeneratingError(response.statusText)
+      return
+    }
+
+    const data = response.body
+    if (!data) {
+      setIsGenerating(false)
+      setGeneratingError('Failed to generate ideas. No data.')
+      return
+    }
+    const reader = data.getReader()
+    const decoder = new TextDecoder()
+    let done = false
+
+    while (!done) {
+      const { value, done: doneReading } = await reader.read()
+      done = doneReading
+      const chunkValue = decoder.decode(value)
+      setGeneratedIdeas((prev) => prev + chunkValue)
     }
 
     setIsGenerating(false)
@@ -85,9 +96,13 @@ export default function Home() {
           {generatingError && <Text fontSize={'md'}>{generatingError}</Text>}
 
           <VStack spacing={4} align={'center'}>
-            {generatedIdeas.map((idea) => (
-              <IdeaCard key={idea.name} name={idea.name} description={idea.description} />
-            ))}
+            {generatedIdeas &&
+              generatedIdeas
+                .substring(generatedIdeas.indexOf('1') + 3)
+                .split('2.')
+                .map((idea: any) => {
+                  return <IdeaCard key={idea} data={idea} />
+                })}
           </VStack>
         </VStack>
       </VStack>

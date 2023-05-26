@@ -2,18 +2,18 @@ import { Idea } from '@/model/idea'
 import { Card, CardBody, CardHeader, Heading, Text } from '../components'
 
 type Props = {
-  name: string
-  description: string
+  data: string
+  // description: string
 }
 
 function IdeaCard(props: Props) {
   return (
     <Card align='center'>
-      <CardHeader>
+      {/* <CardHeader>
         <Heading size='md'> {props.name}</Heading>
-      </CardHeader>
+      </CardHeader> */}
       <CardBody>
-        <Text>{props.description}</Text>
+        <Text>{props.data}</Text>
       </CardBody>
     </Card>
   )
