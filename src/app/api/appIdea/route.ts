@@ -1,6 +1,5 @@
 import { Idea } from '@/model/idea'
 import { NextRequest, NextResponse } from 'next/server'
-import { Configuration, OpenAIApi } from 'openai'
 import { makeBadRequestErrorResponse, makeTooManyRequestsErrorResponse } from '../errorResponse'
 import { rateLimit } from '@/util/rateLimit'
 import { openAIStream } from './openAIStream'

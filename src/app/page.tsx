@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Button, Text, Heading, VStack, Select } from '../components'
 import FeaturesList from './FeaturesList'
 import Hero from './Hero'
-import { Configuration, OpenAIApi } from 'openai'
 import { appCategories } from '@/model/appCategory'
 import { Idea } from '@/model/idea'
 import { IdeaCard } from './IdeaCard'
@@ -15,12 +14,6 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState<boolean>(false)
 
   const [appCategory, setAppCateogry] = useState('')
-
-  const configuration = new Configuration({
-    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-  })
-  delete configuration.baseOptions.headers['User-Agent']
-  const openAIAPI = new OpenAIApi(configuration)
 
   async function generateIdea(appCategory: string) {
     setGeneratedIdeas('')
