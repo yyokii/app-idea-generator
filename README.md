@@ -1,5 +1,7 @@
 # App Idea Generator by AI
 
+https://github.com/yyokii/app-idea-generator/assets/20992687/7ffdb706-eb7c-4067-85bc-e6b84a14b2aa
+
 ## Features
 
 - Generate idea
