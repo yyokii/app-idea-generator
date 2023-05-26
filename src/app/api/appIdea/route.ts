@@ -1,8 +1,8 @@
-import { Idea } from '@/model/idea'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { makeBadRequestErrorResponse, makeTooManyRequestsErrorResponse } from '../errorResponse'
 import { rateLimit } from '@/util/rateLimit'
 import { openAIStream } from './openAIStream'
+import { appCategories } from '@/model/appCategory'
 
 const limiter = rateLimit()
 
@@ -26,6 +26,13 @@ export async function POST(req: NextRequest): Promise<Response> {
   // OpenAI APIを使ってアイデアを生成
   const { appCategory } = (await req.json()) as {
     appCategory?: string
+  }
+
+  const isValidAppCategory =
+    appCategory === '' || appCategories.some((category) => category.value === appCategory)
+
+  if (!isValidAppCategory) {
+    return makeBadRequestErrorResponse('Invalid app category')
   }
 
   const prompt = `

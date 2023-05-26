@@ -93,7 +93,7 @@ export default function Home() {
           </Select>
 
           <Button
-            colorScheme='orange'
+            colorScheme='red'
             size='lg'
             isLoading={isGenerating}
             onClick={async () => {
