@@ -1,4 +1,4 @@
 export interface Idea {
-  name: string
+  title: string
   description: string
 }

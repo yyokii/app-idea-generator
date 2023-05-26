@@ -31,8 +31,6 @@ export async function openAIStream(payload: any) {
               // streamが最初に改行を返す可能性があり、アプリケーションとしてはそれは返答のメインではないので、スキップする。
               return
             }
-            console.log('---')
-            console.log(text)
             const queue = encoder.encode(text)
             controller.enqueue(queue)
             counter++

@@ -40,13 +40,15 @@ export async function POST(req: NextRequest): Promise<Response> {
     A. ${appCategory ?? 'Not specified. Assume random.'}
 
     The output is the product name and its details.
-    Each idea should be labeled "1. ", "2. ". An example output is shown below.
+    Each idea should be labeled "1. ", "2. ".
+    The title should be prefixed with title: and the description should be prefixed with description:.
+    An example output is shown below.
 
-    1. product name
-    product description
+    1. title: product name
+    description: product description
 
-    2. product name
-    product description
+    2. title: product name
+    description: product description
   `
 
   const payload = {

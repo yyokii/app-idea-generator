@@ -56,6 +56,22 @@ export default function Home() {
     setIsGenerating(false)
   }
 
+  function makeIdeaFromStreamData(data: string): Idea {
+    const titlePattern = /title:\s*(.*)\s*description:/i
+    const descriptionPattern = /description:\s*(.*)/i
+
+    const titleMatch = data.match(titlePattern)
+    const descriptionMatch = data.match(descriptionPattern)
+
+    const title = titleMatch ? titleMatch[1] : ''
+    const description = descriptionMatch ? descriptionMatch[1] : ''
+
+    return {
+      title,
+      description,
+    }
+  }
+
   return (
     <VStack spacing={4} align='center'>
       <Hero />
@@ -93,8 +109,9 @@ export default function Home() {
               generatedIdeas
                 .substring(generatedIdeas.indexOf('1') + 3)
                 .split('2.')
-                .map((idea: any) => {
-                  return <IdeaCard key={idea} data={idea} />
+                .map((data: string) => {
+                  const idea = makeIdeaFromStreamData(data)
+                  return <IdeaCard key={idea.title} idea={idea} />
                 })}
           </VStack>
         </VStack>
