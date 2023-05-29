@@ -4,8 +4,8 @@ import Image from 'next/image'
 export default function Hero() {
   return (
     <Container maxW={'5xl'}>
-      <Stack align={'center'} direction={{ base: 'column', md: 'row' }} spacing='24px'>
-        <Image src='/top.png' alt='top image' width={300} height={300} />
+      <Stack align={'center'} direction={{ base: 'column' }} spacing='18px'>
+        <Image src='/opengraph-image.png' alt='top image' width={150} height={300} />
         <Stack
           textAlign={'center'}
           align={'center'}

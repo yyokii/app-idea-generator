@@ -7,9 +7,25 @@ import MainContainer from './MainContainer'
 
 const inter = Inter({ subsets: ['latin'] })
 
+const siteName = 'App Idea Generator by AI'
+const description = 'Generate app ideas by AI'
+const url = 'https://app-idea-generator-rust.vercel.app/'
+
 export const metadata = {
-  title: 'App Idea Generator by AI',
-  description: 'Generate app ideas by AI',
+  title: {
+    default: siteName,
+  },
+  description,
+  openGraph: {
+    title: siteName,
+    description,
+    url,
+    siteName,
+    type: 'website',
+  },
+  alternates: {
+    canonical: url,
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

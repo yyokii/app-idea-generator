@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Button, Text, Heading, VStack, Select } from '../components'
+import { Button, Text, Heading, VStack, Select, Box } from '../components'
 import FeaturesList from './FeaturesList'
 import Hero from './Hero'
 import { appCategories } from '@/model/appCategory'
 import { Idea } from '@/model/idea'
 import { IdeaCard } from './IdeaCard'
+import BuyMeACoffee from '@/components/BuyMeACofee'
 
 export default function Home() {
   const [generatingError, setGeneratingError] = useState<string>('')
@@ -73,49 +74,56 @@ export default function Home() {
   }
 
   return (
-    <VStack spacing={4} align='center'>
+    <VStack spacing={10} align='center'>
       <Hero />
       <FeaturesList />
+      <Heading fontSize={'3xl'}>Try</Heading>
       <VStack spacing={4} pb={8}>
-        <Heading fontSize={'3xl'}>Try</Heading>
-        <VStack spacing={4} pb={8}>
-          <Heading fontSize={'xl'}>What is the category of product you want to create?</Heading>
-          <Select
-            placeholder='select category'
-            value={appCategory}
-            onChange={(e) => setAppCateogry(e.target.value)}
-          >
-            {appCategories.map((category) => (
-              <option key={category.value} value={category.value}>
-                {category.label}
-              </option>
-            ))}
-          </Select>
+        <Heading fontSize={'xl'}>What is the category of product you want to create?</Heading>
+        <Select
+          placeholder='select category'
+          value={appCategory}
+          onChange={(e) => setAppCateogry(e.target.value)}
+        >
+          {appCategories.map((category) => (
+            <option key={category.value} value={category.value}>
+              {category.label}
+            </option>
+          ))}
+        </Select>
 
-          <Button
-            colorScheme='red'
-            size='lg'
-            isLoading={isGenerating}
-            onClick={async () => {
-              await generateIdea(appCategory)
-            }}
-          >
-            Generate
-          </Button>
-          {generatingError && <Text fontSize={'md'}>{generatingError}</Text>}
+        <Button
+          colorScheme='red'
+          size='lg'
+          isLoading={isGenerating}
+          onClick={async () => {
+            await generateIdea(appCategory)
+          }}
+        >
+          Generate
+        </Button>
+        {generatingError && <Text fontSize={'md'}>{generatingError}</Text>}
 
-          <VStack spacing={4} align={'center'}>
-            {generatedIdeas &&
-              generatedIdeas
-                .substring(generatedIdeas.indexOf('1') + 3)
-                .split('2.')
-                .map((data: string) => {
-                  const idea = makeIdeaFromStreamData(data)
-                  return <IdeaCard key={idea.title} idea={idea} />
-                })}
-          </VStack>
+        <VStack spacing={4} align={'center'}>
+          {generatedIdeas &&
+            generatedIdeas
+              .substring(generatedIdeas.indexOf('1') + 3)
+              .split('2.')
+              .map((data: string) => {
+                const idea = makeIdeaFromStreamData(data)
+                return <IdeaCard key={idea.title} idea={idea} />
+              })}
         </VStack>
       </VStack>
+
+      <Box bg='gray.100' p={4} borderRadius='md' mt={'50px'}>
+        <VStack spacing={4} align={'center'}>
+          <Text fontSize={'sm'} fontWeight={'semibold'}>
+            If you like this app, please buy me a coffee😄.
+          </Text>
+          <BuyMeACoffee />
+        </VStack>
+      </Box>
     </VStack>
   )
 }
